@@ -78,11 +78,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Autonomy Blackbox — Cursor for AV debugging" },
+      {
+        name: "description",
+        content:
+          "Describe a vehicle issue. Blackbox replays the drive, traces the root cause, maps it to code, and prepares the Cursor fix.",
+      },
+      { name: "author", content: "Autonomy Blackbox" },
+      { property: "og:title", content: "Autonomy Blackbox" },
+      {
+        property: "og:description",
+        content:
+          "An autonomous-vehicle debugging workspace: replay incidents, diagnose behavior, map to code, and prepare Cursor-ready fixes.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
