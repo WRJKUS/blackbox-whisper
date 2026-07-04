@@ -45,6 +45,13 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-replay: var(--replay);
+  --color-replay-soft: var(--replay-soft);
+  --color-anomaly: var(--anomaly);
+  --color-anomaly-soft: var(--anomaly-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-surface-muted: var(--surface-muted);
   --color-ring-offset-background: var(--background);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
