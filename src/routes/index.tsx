@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 import { TopBar } from "@/components/blackbox/TopBar";
@@ -170,26 +170,29 @@ function Index() {
           )}
         </motion.main>
 
-        {issueOpened && (
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, ease: appleEase }}
-            className="flex min-h-0 shrink-0"
-          >
-            <AgentPanel
-              visibleSteps={visibleSteps}
-              regression={regression}
-              canRunRegression={previewed}
-              fixSynced={fixSynced}
-              onApply={handleApply}
-              onPreview={handlePreview}
-              onTechnical={handleTechnical}
-              onRunRegression={handleRunRegression}
-              onSyncToPlm={handleSyncToPlm}
-            />
-          </motion.div>
-        )}
+        <AnimatePresence>
+          {issueOpened && nav !== "plm" && (
+            <motion.div
+              initial={{ opacity: 0, x: 24 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 24 }}
+              transition={{ duration: 0.5, ease: appleEase }}
+              className="flex min-h-0 shrink-0"
+            >
+              <AgentPanel
+                visibleSteps={visibleSteps}
+                regression={regression}
+                canRunRegression={previewed}
+                fixSynced={fixSynced}
+                onApply={handleApply}
+                onPreview={handlePreview}
+                onTechnical={handleTechnical}
+                onRunRegression={handleRunRegression}
+                onSyncToPlm={handleSyncToPlm}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <TechnicalDrawer
