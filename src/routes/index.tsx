@@ -33,6 +33,7 @@ function Index() {
   const [previewed, setPreviewed] = useState(false);
   const [regression, setRegression] = useState<RegState>("pending");
   const [fixSynced, setFixSynced] = useState(false);
+  const [issueOpened, setIssueOpened] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => {
@@ -48,12 +49,8 @@ function Index() {
     });
   };
 
-  // Initial page-load reveal
-  useEffect(() => {
-    revealSteps();
-    return clearTimers;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // Clear pending timers on unmount
+  useEffect(() => clearTimers, []);
 
   const handleDiagnose = () => {
     setDiagnosing(true);
@@ -103,13 +100,17 @@ function Index() {
 
   const handleOpenIssue = (issue: PlmIssue) => {
     if (issue.id === FILED_ISSUE.id) {
+      if (!issueOpened) {
+        setIssueOpened(true);
+        revealSteps();
+      }
       setNav("replay");
       toast.success("ROS bag attached", {
         description: "paris_urban_drive_seg07.bag · 4.2s",
       });
     } else {
       toast.info("No replay attached", {
-        description: "Only issues filed from Blackbox include a drive replay.",
+        description: "Only issues filed from the Hardware Agent include a drive replay.",
       });
     }
   };
@@ -156,8 +157,8 @@ function Index() {
               />
 
               <p className="px-0.5 text-[13px] leading-relaxed text-muted-foreground">
-                Opened from PLM-1047. Blackbox replays the drive, traces the root cause, maps it to
-                code, and prepares the Cursor fix.
+                Opened from PLM-1047. Cursor-Enabled Hardware replays the drive, traces the root
+                cause, maps it to code, and prepares the Cursor fix.
               </p>
 
               <ReplayCanvas replayKey={replayKey} />
@@ -169,17 +170,26 @@ function Index() {
           )}
         </motion.main>
 
-        <AgentPanel
-          visibleSteps={visibleSteps}
-          regression={regression}
-          canRunRegression={previewed}
-          fixSynced={fixSynced}
-          onApply={handleApply}
-          onPreview={handlePreview}
-          onTechnical={handleTechnical}
-          onRunRegression={handleRunRegression}
-          onSyncToPlm={handleSyncToPlm}
-        />
+        {issueOpened && (
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, ease: appleEase }}
+            className="flex min-h-0 shrink-0"
+          >
+            <AgentPanel
+              visibleSteps={visibleSteps}
+              regression={regression}
+              canRunRegression={previewed}
+              fixSynced={fixSynced}
+              onApply={handleApply}
+              onPreview={handlePreview}
+              onTechnical={handleTechnical}
+              onRunRegression={handleRunRegression}
+              onSyncToPlm={handleSyncToPlm}
+            />
+          </motion.div>
+        )}
       </div>
 
       <TechnicalDrawer

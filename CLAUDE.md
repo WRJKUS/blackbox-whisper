@@ -20,7 +20,7 @@ This project is connected to [Lovable](https://lovable.dev) (see `AGENTS.md`). *
 
 ## What this app is
 
-"Autonomy Blackbox" — a single-page **scripted demo UI** of an autonomous-vehicle debugging workspace (replay a drive, diagnose, trace to code, prepare a Cursor fix, run regression). There is no backend and no real data: all "agent" behavior is simulated with `setTimeout` sequences and hardcoded content.
+"Cursor-Enabled Hardware" (formerly "Autonomy Blackbox"; internal identifiers still say `blackbox`) — a single-page **scripted demo UI** of an autonomous-vehicle debugging workspace (replay a drive, diagnose, trace to code, prepare a Cursor fix, run regression). There is no backend and no real data: all "agent" behavior is simulated with `setTimeout` sequences and hardcoded content.
 
 ## Architecture
 

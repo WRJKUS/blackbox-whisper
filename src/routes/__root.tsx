@@ -78,14 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Autonomy Blackbox — Cursor for AV debugging" },
+      { title: "Cursor-Enabled Hardware — AV debugging workspace" },
       {
         name: "description",
         content:
-          "Describe a vehicle issue. Blackbox replays the drive, traces the root cause, maps it to code, and prepares the Cursor fix.",
+          "Describe a vehicle issue. Cursor-Enabled Hardware replays the drive, traces the root cause, maps it to code, and prepares the Cursor fix.",
       },
-      { name: "author", content: "Autonomy Blackbox" },
-      { property: "og:title", content: "Autonomy Blackbox" },
+      { name: "author", content: "Cursor-Enabled Hardware" },
+      { property: "og:title", content: "Cursor-Enabled Hardware" },
       {
         property: "og:description",
         content:

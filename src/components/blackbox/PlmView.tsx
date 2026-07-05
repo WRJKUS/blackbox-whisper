@@ -70,7 +70,7 @@ function IssueRow({
         <span>Opened {issue.opened}</span>
         {issue.source === "blackbox" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-replay-soft px-2 py-0.5 text-[11px] font-medium text-primary">
-            <Cpu className="h-3 w-3" /> From Blackbox
+            <Cpu className="h-3 w-3" /> From Hardware Agent
           </span>
         )}
       </div>

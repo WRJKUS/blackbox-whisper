@@ -11,7 +11,7 @@ export function TopBar({ onTechnical }: { onTechnical: () => void }) {
           <Box className="h-4 w-4 text-card" strokeWidth={2.25} />
         </div>
         <span className="text-sm font-semibold tracking-[-0.01em] text-foreground">
-          Autonomy Blackbox
+          Cursor-Enabled Hardware
         </span>
       </div>
 

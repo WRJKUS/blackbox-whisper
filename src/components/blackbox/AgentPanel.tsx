@@ -50,7 +50,7 @@ export function AgentPanel({
           </div>
           <div className="leading-tight">
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground">
-              Blackbox Agent
+              Hardware Agent
             </p>
             <p className="text-xs text-muted-foreground">Diagnosis ready</p>
           </div>
