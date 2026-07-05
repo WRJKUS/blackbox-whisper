@@ -5,11 +5,11 @@ import { REGION_POINTS, SEVERITY_META, type PlmIssue } from "@/lib/plm";
 export function CarSchematic({
   issues,
   highlightedId,
-  newIssueId,
+  pulseId,
 }: {
   issues: PlmIssue[];
   highlightedId: string | null;
-  newIssueId: string | null;
+  pulseId: string | null;
 }) {
   return (
     <svg
@@ -91,7 +91,8 @@ export function CarSchematic({
       {/* Issue markers */}
       {issues.map((issue, i) => {
         const point = REGION_POINTS[issue.region];
-        const meta = SEVERITY_META[issue.severity];
+        const meta =
+          issue.status === "resolved" ? SEVERITY_META.low : SEVERITY_META[issue.severity];
         const highlighted = highlightedId === issue.id;
         const dimmed = highlightedId !== null && !highlighted;
         return (
@@ -102,7 +103,7 @@ export function CarSchematic({
             animate={{ scale: 1, opacity: 1 }}
             transition={{ ...softSpring, delay: 0.25 + i * 0.07 }}
           >
-            {issue.id === newIssueId && (
+            {issue.id === pulseId && (
               <motion.circle
                 cx={point.cx}
                 cy={point.cy}

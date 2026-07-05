@@ -1,30 +1,36 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Cpu } from "lucide-react";
+import { Cpu, ChevronRight } from "lucide-react";
 import { CarSchematic } from "@/components/blackbox/CarSchematic";
 import { appleEase } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import { FILED_ISSUE, PLM_ISSUES, SEVERITY_META, STATUS_META, type PlmIssue } from "@/lib/plm";
 
 function IssueRow({
   issue,
   index,
-  isNew,
+  flashResolved,
+  selected,
   onHover,
+  onOpen,
 }: {
   issue: PlmIssue;
   index: number;
-  isNew: boolean;
+  flashResolved: boolean;
+  selected: boolean;
   onHover: (id: string | null) => void;
+  onOpen: () => void;
 }) {
   return (
-    <motion.div
+    <motion.button
+      type="button"
       initial={{ opacity: 0, y: 8 }}
       animate={
-        isNew
+        flashResolved
           ? {
               opacity: 1,
               y: 0,
-              backgroundColor: ["oklch(0.965 0.014 253.6)", "oklch(1 0 0 / 0)"],
+              backgroundColor: ["oklch(0.972 0.016 152)", "oklch(1 0 0 / 0)"],
             }
           : { opacity: 1, y: 0 }
       }
@@ -32,11 +38,15 @@ function IssueRow({
         duration: 0.4,
         ease: appleEase,
         delay: index * 0.05,
-        ...(isNew && { backgroundColor: { duration: 2.4, ease: "easeOut", delay: 0.4 } }),
+        ...(flashResolved && { backgroundColor: { duration: 2.4, ease: "easeOut", delay: 0.4 } }),
       }}
       onMouseEnter={() => onHover(issue.id)}
       onMouseLeave={() => onHover(null)}
-      className="group -mx-2 flex flex-col gap-1 rounded-xl px-2 py-3 transition-colors hover:bg-secondary/50"
+      onClick={onOpen}
+      className={cn(
+        "group -mx-2 flex w-[calc(100%+16px)] cursor-pointer flex-col gap-1 rounded-xl px-2 py-3 text-left transition-colors hover:bg-secondary/50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        selected && "bg-secondary/60",
+      )}
     >
       <div className="flex items-center gap-2">
         <span className="font-mono text-xs text-muted-foreground">{issue.id}</span>
@@ -50,6 +60,7 @@ function IssueRow({
         >
           {STATUS_META[issue.status].label}
         </span>
+        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
       <p className="text-[13px] font-medium leading-snug text-foreground">{issue.title}</p>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -66,14 +77,24 @@ function IssueRow({
       {issue.detail && (
         <p className="truncate font-mono text-[11px] text-muted-foreground">{issue.detail}</p>
       )}
-    </motion.div>
+    </motion.button>
   );
 }
 
-export function PlmView({ issueFiled }: { issueFiled: boolean }) {
+export function PlmView({
+  fixSynced,
+  onOpenIssue,
+}: {
+  fixSynced: boolean;
+  onOpenIssue: (issue: PlmIssue) => void;
+}) {
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
-  const issues = issueFiled ? [FILED_ISSUE, ...PLM_ISSUES] : PLM_ISSUES;
-  const hovered = issues.find((i) => i.id === highlightedId);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const issues: PlmIssue[] = [
+    fixSynced ? { ...FILED_ISSUE, status: "resolved" } : FILED_ISSUE,
+    ...PLM_ISSUES,
+  ];
+  const hovered = issues.find((i) => i.id === (highlightedId ?? selectedId));
 
   return (
     <motion.div
@@ -114,8 +135,13 @@ export function PlmView({ issueFiled }: { issueFiled: boolean }) {
                 key={issue.id}
                 issue={issue}
                 index={i}
-                isNew={issueFiled && issue.id === FILED_ISSUE.id}
+                flashResolved={fixSynced && issue.id === FILED_ISSUE.id}
+                selected={selectedId === issue.id}
                 onHover={setHighlightedId}
+                onOpen={() => {
+                  setSelectedId(issue.id);
+                  onOpenIssue(issue);
+                }}
               />
             ))}
           </div>
@@ -128,8 +154,8 @@ export function PlmView({ issueFiled }: { issueFiled: boolean }) {
           </p>
           <CarSchematic
             issues={issues}
-            highlightedId={highlightedId}
-            newIssueId={issueFiled ? FILED_ISSUE.id : null}
+            highlightedId={highlightedId ?? selectedId}
+            pulseId={fixSynced ? null : FILED_ISSUE.id}
           />
           <p className="h-4 text-center text-xs text-muted-foreground">
             {hovered ? `${hovered.component} · ${hovered.system}` : "Hover an issue to locate it"}

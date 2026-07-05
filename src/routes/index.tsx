@@ -13,6 +13,7 @@ import { AgentPanel } from "@/components/blackbox/AgentPanel";
 import { TechnicalDrawer } from "@/components/blackbox/TechnicalDrawer";
 import { PlmView } from "@/components/blackbox/PlmView";
 import { AGENT_STEPS, type NavKey, type ProgressKey } from "@/lib/blackbox";
+import { FILED_ISSUE, type PlmIssue } from "@/lib/plm";
 import { appleEase } from "@/lib/motion";
 
 export const Route = createFileRoute("/")({
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/")({
 type RegState = "pending" | "running" | "passed";
 
 function Index() {
-  const [nav, setNav] = useState<NavKey>("replay");
+  const [nav, setNav] = useState<NavKey>("plm");
   const [prompt, setPrompt] = useState("Car steers too little during left turns.");
   const [diagnosing, setDiagnosing] = useState(false);
   const [visibleSteps, setVisibleSteps] = useState(0);
@@ -31,7 +32,7 @@ function Index() {
   const [drawerTab, setDrawerTab] = useState("Trace");
   const [previewed, setPreviewed] = useState(false);
   const [regression, setRegression] = useState<RegState>("pending");
-  const [issueFiled, setIssueFiled] = useState(false);
+  const [fixSynced, setFixSynced] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => {
@@ -50,17 +51,7 @@ function Index() {
   // Initial page-load reveal
   useEffect(() => {
     revealSteps();
-    const t = setTimeout(
-      () =>
-        toast.success("ROS bag attached", {
-          description: "paris_urban_drive_seg07.bag · 4.2s",
-        }),
-      400,
-    );
-    return () => {
-      clearTimers();
-      clearTimeout(t);
-    };
+    return clearTimers;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -110,11 +101,24 @@ function Index() {
     );
   };
 
-  const handleAddToPlm = () => {
-    if (issueFiled) return;
-    setIssueFiled(true);
-    toast.success("Issue filed to PLM", {
-      description: "PLM-1047 · Steering Controller · linked to steering_controller.cpp",
+  const handleOpenIssue = (issue: PlmIssue) => {
+    if (issue.id === FILED_ISSUE.id) {
+      setNav("replay");
+      toast.success("ROS bag attached", {
+        description: "paris_urban_drive_seg07.bag · 4.2s",
+      });
+    } else {
+      toast.info("No replay attached", {
+        description: "Only issues filed from Blackbox include a drive replay.",
+      });
+    }
+  };
+
+  const handleSyncToPlm = () => {
+    if (fixSynced) return;
+    setFixSynced(true);
+    toast.success("Fix synced to PLM", {
+      description: "PLM-1047 · Steering Controller · marked Resolved",
     });
     setNav("plm");
   };
@@ -141,7 +145,7 @@ function Index() {
           className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-8"
         >
           {nav === "plm" ? (
-            <PlmView issueFiled={issueFiled} />
+            <PlmView fixSynced={fixSynced} onOpenIssue={handleOpenIssue} />
           ) : (
             <>
               <PromptBar
@@ -152,8 +156,8 @@ function Index() {
               />
 
               <p className="px-0.5 text-[13px] leading-relaxed text-muted-foreground">
-                Describe a vehicle issue. Blackbox replays the drive, traces the root cause, maps it
-                to code, and prepares the Cursor fix.
+                Opened from PLM-1047. Blackbox replays the drive, traces the root cause, maps it to
+                code, and prepares the Cursor fix.
               </p>
 
               <ReplayCanvas replayKey={replayKey} />
@@ -169,12 +173,12 @@ function Index() {
           visibleSteps={visibleSteps}
           regression={regression}
           canRunRegression={previewed}
-          plmFiled={issueFiled}
+          fixSynced={fixSynced}
           onApply={handleApply}
           onPreview={handlePreview}
           onTechnical={handleTechnical}
           onRunRegression={handleRunRegression}
-          onAddToPlm={handleAddToPlm}
+          onSyncToPlm={handleSyncToPlm}
         />
       </div>
 

@@ -6,11 +6,11 @@ import { softSpring } from "@/lib/motion";
 import type { NavKey } from "@/lib/blackbox";
 
 const ITEMS: { key: NavKey; label: string; icon: LucideIcon }[] = [
+  { key: "plm", label: "PLM", icon: ClipboardList },
   { key: "replay", label: "Replay", icon: Play },
   { key: "diagnosis", label: "Diagnosis", icon: Stethoscope },
   { key: "fix", label: "Fix", icon: Wrench },
   { key: "validation", label: "Validation", icon: ShieldCheck },
-  { key: "plm", label: "PLM", icon: ClipboardList },
 ];
 
 export function LeftRail({ active, onSelect }: { active: NavKey; onSelect: (k: NavKey) => void }) {

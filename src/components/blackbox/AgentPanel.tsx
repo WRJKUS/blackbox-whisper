@@ -8,7 +8,7 @@ import {
   FileText,
   FlaskConical,
   ArrowRight,
-  ClipboardPlus,
+  Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -21,22 +21,22 @@ export function AgentPanel({
   visibleSteps,
   regression,
   canRunRegression,
-  plmFiled,
+  fixSynced,
   onApply,
   onPreview,
   onTechnical,
   onRunRegression,
-  onAddToPlm,
+  onSyncToPlm,
 }: {
   visibleSteps: number;
   regression: RegState;
   canRunRegression: boolean;
-  plmFiled: boolean;
+  fixSynced: boolean;
   onApply: () => void;
   onPreview: () => void;
   onTechnical: () => void;
   onRunRegression: () => void;
-  onAddToPlm: () => void;
+  onSyncToPlm: () => void;
 }) {
   const allDone = visibleSteps >= AGENT_STEPS.length;
 
@@ -193,16 +193,16 @@ export function AgentPanel({
           <Button
             variant="outline"
             className="h-10 w-full gap-1.5"
-            disabled={plmFiled}
-            onClick={onAddToPlm}
+            disabled={fixSynced || regression !== "passed"}
+            onClick={onSyncToPlm}
           >
-            {plmFiled ? (
+            {fixSynced ? (
               <>
-                <Check className="h-4 w-4 text-success" /> Added to PLM
+                <Check className="h-4 w-4 text-success" /> Synced to PLM
               </>
             ) : (
               <>
-                <ClipboardPlus className="h-4 w-4" /> Add to PLM
+                <Upload className="h-4 w-4" /> Sync fix to PLM
               </>
             )}
           </Button>
