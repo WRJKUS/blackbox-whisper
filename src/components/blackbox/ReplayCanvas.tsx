@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import parisReplay from "@/assets/paris-replay.jpg";
+import replayVideo from "@/assets/replay.mp4";
 import { appleEase, easeOutQuart } from "@/lib/motion";
 
 function OverlayLabel({
@@ -40,11 +41,14 @@ export function ReplayCanvas({ replayKey }: { replayKey: number }) {
       </div>
 
       <div className="relative aspect-[16/9] w-full bg-surface-muted">
-        <img
-          src={parisReplay}
-          alt="Autonomous vehicle approaching a left turn at a Paris intersection"
-          width={1280}
-          height={832}
+        <video
+          key={replayKey}
+          src={replayVideo}
+          poster={parisReplay}
+          autoPlay
+          muted
+          loop
+          playsInline
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />

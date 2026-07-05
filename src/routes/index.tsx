@@ -100,10 +100,7 @@ function Index() {
 
   const handleOpenIssue = (issue: PlmIssue) => {
     if (issue.id === FILED_ISSUE.id) {
-      if (!issueOpened) {
-        setIssueOpened(true);
-        revealSteps();
-      }
+      setIssueOpened(true);
       setNav("replay");
       toast.success("ROS bag attached", {
         description: "paris_urban_drive_seg07.bag · 4.2s",
@@ -181,6 +178,7 @@ function Index() {
             >
               <AgentPanel
                 visibleSteps={visibleSteps}
+                diagnosing={diagnosing}
                 regression={regression}
                 canRunRegression={previewed}
                 fixSynced={fixSynced}

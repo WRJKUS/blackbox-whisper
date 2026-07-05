@@ -9,6 +9,7 @@ import {
   FlaskConical,
   ArrowRight,
   Upload,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ type RegState = "pending" | "running" | "passed";
 
 export function AgentPanel({
   visibleSteps,
+  diagnosing,
   regression,
   canRunRegression,
   fixSynced,
@@ -29,6 +31,7 @@ export function AgentPanel({
   onSyncToPlm,
 }: {
   visibleSteps: number;
+  diagnosing: boolean;
   regression: RegState;
   canRunRegression: boolean;
   fixSynced: boolean;
@@ -38,6 +41,7 @@ export function AgentPanel({
   onRunRegression: () => void;
   onSyncToPlm: () => void;
 }) {
+  const started = diagnosing || visibleSteps > 0;
   const allDone = visibleSteps >= AGENT_STEPS.length;
 
   return (
@@ -52,109 +56,146 @@ export function AgentPanel({
             <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-foreground">
               Hardware Agent
             </p>
-            <p className="text-xs text-muted-foreground">Diagnosis ready</p>
+            <p className="text-xs text-muted-foreground">
+              {!started ? "Awaiting diagnosis" : allDone ? "Diagnosis ready" : "Diagnosing…"}
+            </p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-0.5 text-[11px] font-medium text-success">
-          <span className="h-1.5 w-1.5 rounded-full bg-success" /> ready
-        </span>
+        {allDone ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-soft px-2.5 py-0.5 text-[11px] font-medium text-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" /> ready
+          </span>
+        ) : started ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-replay-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> running
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/50" /> standby
+          </span>
+        )}
       </div>
 
       <div className="flex flex-col gap-5 p-5">
-        {/* Diagnosis */}
-        <section className="flex flex-col gap-1.5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            Diagnosis
-          </p>
-          <p className="text-sm font-semibold leading-snug tracking-[-0.01em] text-foreground">
-            Steering command was too low.
-          </p>
-          <p className="text-[13px] leading-relaxed text-muted-foreground">
-            The planner requested{" "}
-            <span className="font-medium text-foreground">18.4° steering</span>, but the control
-            module output only <span className="font-medium text-anomaly">9.7°</span> because
-            steering was clamped before curvature compensation.
-          </p>
-        </section>
+        {/* Empty state before any diagnosis */}
+        {!started && (
+          <section className="flex flex-col items-center gap-2 rounded-xl bg-surface-muted px-4 py-8 text-center shadow-hairline">
+            <Sparkles className="h-5 w-5 text-muted-foreground/60" />
+            <p className="text-[13px] font-medium text-foreground">No diagnosis yet</p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Describe the issue in the prompt bar and run Diagnose to trace the root cause.
+            </p>
+          </section>
+        )}
 
-        {/* Fix */}
-        <section className="rounded-xl bg-replay-soft p-3.5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-primary">Fix</p>
-          <p className="mt-1 text-[13px] font-medium leading-snug text-foreground">
-            Move the steering clamp after curvature compensation.
-          </p>
-        </section>
-
-        {/* Root cause card */}
-        <section className="rounded-xl bg-surface-muted p-3.5 shadow-hairline">
-          <div className="flex items-center gap-1.5">
-            <FileCode2 className="h-3.5 w-3.5 text-foreground" />
-            <p className="text-[13px] font-semibold text-foreground">Root cause isolated</p>
-          </div>
-          <div className="mt-2 rounded-lg bg-card px-2.5 py-2 font-mono text-xs leading-relaxed shadow-hairline">
-            <p className="text-foreground">{ROOT_FILE}</p>
-            <p className="text-muted-foreground">{ROOT_FN}</p>
-          </div>
-          <div className="mt-2.5 flex items-center gap-1.5">
-            <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-              Control
-            </span>
-            <span className="rounded-full bg-success-soft px-2 py-0.5 text-[11px] font-medium text-success">
-              Patch ready
-            </span>
-          </div>
-          <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-            Clamp is applied before curvature compensation.
-          </p>
-        </section>
-
-        {/* Metric grid */}
-        <section className="grid grid-cols-2 gap-2">
-          {METRICS.map((m) => (
-            <div key={m.label} className="rounded-xl bg-surface-muted px-4 py-3">
+        {/* Diagnosis result — appears once all agent steps complete */}
+        {allDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: appleEase }}
+            className="flex flex-col gap-5"
+          >
+            {/* Diagnosis */}
+            <section className="flex flex-col gap-1.5">
               <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-                {m.label}
+                Diagnosis
               </p>
-              <p className="mt-1 text-2xl font-light tabular-nums tracking-[-0.02em] text-foreground">
-                {m.value}
+              <p className="text-sm font-semibold leading-snug tracking-[-0.01em] text-foreground">
+                Steering command was too low.
               </p>
-            </div>
-          ))}
-        </section>
+              <p className="text-[13px] leading-relaxed text-muted-foreground">
+                The planner requested{" "}
+                <span className="font-medium text-foreground">18.4° steering</span>, but the control
+                module output only <span className="font-medium text-anomaly">9.7°</span> because
+                steering was clamped before curvature compensation.
+              </p>
+            </section>
+
+            {/* Fix */}
+            <section className="rounded-xl bg-replay-soft p-3.5">
+              <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-primary">
+                Fix
+              </p>
+              <p className="mt-1 text-[13px] font-medium leading-snug text-foreground">
+                Move the steering clamp after curvature compensation.
+              </p>
+            </section>
+
+            {/* Root cause card */}
+            <section className="rounded-xl bg-surface-muted p-3.5 shadow-hairline">
+              <div className="flex items-center gap-1.5">
+                <FileCode2 className="h-3.5 w-3.5 text-foreground" />
+                <p className="text-[13px] font-semibold text-foreground">Root cause isolated</p>
+              </div>
+              <div className="mt-2 rounded-lg bg-card px-2.5 py-2 font-mono text-xs leading-relaxed shadow-hairline">
+                <p className="text-foreground">{ROOT_FILE}</p>
+                <p className="text-muted-foreground">{ROOT_FN}</p>
+              </div>
+              <div className="mt-2.5 flex items-center gap-1.5">
+                <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  Control
+                </span>
+                <span className="rounded-full bg-success-soft px-2 py-0.5 text-[11px] font-medium text-success">
+                  Patch ready
+                </span>
+              </div>
+              <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
+                Clamp is applied before curvature compensation.
+              </p>
+            </section>
+
+            {/* Metric grid */}
+            <section className="grid grid-cols-2 gap-2">
+              {METRICS.map((m) => (
+                <div key={m.label} className="rounded-xl bg-surface-muted px-4 py-3">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+                    {m.label}
+                  </p>
+                  <p className="mt-1 text-2xl font-light tabular-nums tracking-[-0.02em] text-foreground">
+                    {m.value}
+                  </p>
+                </div>
+              ))}
+            </section>
+          </motion.div>
+        )}
 
         {/* Agent steps checklist */}
-        <section className="flex flex-col gap-1">
-          <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
-            Agent steps
-          </p>
-          {AGENT_STEPS.map((step, i) => {
-            const done = i < visibleSteps;
-            return (
-              <AnimatePresence key={step}>
-                {done && (
-                  <motion.div
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.35, ease: easeOutQuart }}
-                    className="flex items-center gap-2 py-1"
-                  >
-                    <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success-soft">
-                      <Check className="h-2.5 w-2.5 text-success" strokeWidth={3.5} />
-                    </span>
-                    <span className="text-[13px] text-foreground">{step}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            );
-          })}
-          {!allDone &&
-            AGENT_STEPS.slice(visibleSteps, visibleSteps + 1).map((step) => (
-              <div key={step} className="flex items-center gap-2 py-1">
-                <Circle className="h-4 w-4 animate-pulse text-muted-foreground/40" />
-                <span className="text-[13px] text-muted-foreground">{step}</span>
-              </div>
-            ))}
-        </section>
+        {started && (
+          <section className="flex flex-col gap-1">
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Agent steps
+            </p>
+            {AGENT_STEPS.map((step, i) => {
+              const done = i < visibleSteps;
+              return (
+                <AnimatePresence key={step}>
+                  {done && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.35, ease: easeOutQuart }}
+                      className="flex items-center gap-2 py-1"
+                    >
+                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-success-soft">
+                        <Check className="h-2.5 w-2.5 text-success" strokeWidth={3.5} />
+                      </span>
+                      <span className="text-[13px] text-foreground">{step}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              );
+            })}
+            {!allDone &&
+              AGENT_STEPS.slice(visibleSteps, visibleSteps + 1).map((step) => (
+                <div key={step} className="flex items-center gap-2 py-1">
+                  <Circle className="h-4 w-4 animate-pulse text-muted-foreground/40" />
+                  <span className="text-[13px] text-muted-foreground">{step}</span>
+                </div>
+              ))}
+          </section>
+        )}
 
         <AnimatePresence>
           {allDone && (
@@ -178,12 +219,17 @@ export function AgentPanel({
 
         {/* Buttons */}
         <div className="flex flex-col gap-2.5 pt-1">
-          <Button className="h-11 w-full gap-1.5" onClick={onApply}>
+          <Button className="h-11 w-full gap-1.5" disabled={!allDone} onClick={onApply}>
             Apply in Cursor
             <ArrowRight className="h-4 w-4" />
           </Button>
           <div className="flex gap-2.5">
-            <Button variant="outline" className="h-10 flex-1 gap-1.5" onClick={onPreview}>
+            <Button
+              variant="outline"
+              className="h-10 flex-1 gap-1.5"
+              disabled={!allDone}
+              onClick={onPreview}
+            >
               <Eye className="h-4 w-4" /> Preview Fix
             </Button>
             <Button variant="outline" className="h-10 flex-1 gap-1.5" onClick={onTechnical}>
