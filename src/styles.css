@@ -64,6 +64,8 @@
   --color-anomaly-soft: var(--anomaly-soft);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
   --color-surface-muted: var(--surface-muted);
   --color-ring-offset-background: var(--background);
 }
@@ -100,6 +102,8 @@
   --anomaly-soft: oklch(0.972 0.011 25); /* ~#fbf1ef */
   --success: oklch(0.6 0.12 152); /* muted green ~#3d9463 */
   --success-soft: oklch(0.972 0.016 152); /* ~#eef8f1 */
+  --warning: oklch(0.62 0.13 70); /* desaturated amber ~#b0782d */
+  --warning-soft: oklch(0.977 0.018 85); /* ~#fdf6e9 */
   --destructive: oklch(0.58 0.15 25);
   --destructive-foreground: oklch(1 0 0);
 }

@@ -11,6 +11,7 @@ import { ProgressRail } from "@/components/blackbox/ProgressRail";
 import { ValidationStrip } from "@/components/blackbox/ValidationStrip";
 import { AgentPanel } from "@/components/blackbox/AgentPanel";
 import { TechnicalDrawer } from "@/components/blackbox/TechnicalDrawer";
+import { PlmView } from "@/components/blackbox/PlmView";
 import { AGENT_STEPS, type NavKey, type ProgressKey } from "@/lib/blackbox";
 import { appleEase } from "@/lib/motion";
 
@@ -30,6 +31,7 @@ function Index() {
   const [drawerTab, setDrawerTab] = useState("Trace");
   const [previewed, setPreviewed] = useState(false);
   const [regression, setRegression] = useState<RegState>("pending");
+  const [issueFiled, setIssueFiled] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clearTimers = () => {
@@ -108,6 +110,15 @@ function Index() {
     );
   };
 
+  const handleAddToPlm = () => {
+    if (issueFiled) return;
+    setIssueFiled(true);
+    toast.success("Issue filed to PLM", {
+      description: "PLM-1047 · Steering Controller · linked to steering_controller.cpp",
+    });
+    setNav("plm");
+  };
+
   const progressDone: ProgressKey[] =
     regression === "passed"
       ? ["replay", "diagnose", "trace", "fix", "validate"]
@@ -129,33 +140,41 @@ function Index() {
           transition={{ duration: 0.6, ease: appleEase }}
           className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-8"
         >
-          <PromptBar
-            value={prompt}
-            onChange={setPrompt}
-            onDiagnose={handleDiagnose}
-            diagnosing={diagnosing}
-          />
+          {nav === "plm" ? (
+            <PlmView issueFiled={issueFiled} />
+          ) : (
+            <>
+              <PromptBar
+                value={prompt}
+                onChange={setPrompt}
+                onDiagnose={handleDiagnose}
+                diagnosing={diagnosing}
+              />
 
-          <p className="px-0.5 text-[13px] leading-relaxed text-muted-foreground">
-            Describe a vehicle issue. Blackbox replays the drive, traces the root cause, maps it to
-            code, and prepares the Cursor fix.
-          </p>
+              <p className="px-0.5 text-[13px] leading-relaxed text-muted-foreground">
+                Describe a vehicle issue. Blackbox replays the drive, traces the root cause, maps it
+                to code, and prepares the Cursor fix.
+              </p>
 
-          <ReplayCanvas replayKey={replayKey} />
+              <ReplayCanvas replayKey={replayKey} />
 
-          <ProgressRail done={progressDone} />
+              <ProgressRail done={progressDone} />
 
-          <ValidationStrip regression={regression} />
+              <ValidationStrip regression={regression} />
+            </>
+          )}
         </motion.main>
 
         <AgentPanel
           visibleSteps={visibleSteps}
           regression={regression}
           canRunRegression={previewed}
+          plmFiled={issueFiled}
           onApply={handleApply}
           onPreview={handlePreview}
           onTechnical={handleTechnical}
           onRunRegression={handleRunRegression}
+          onAddToPlm={handleAddToPlm}
         />
       </div>
 

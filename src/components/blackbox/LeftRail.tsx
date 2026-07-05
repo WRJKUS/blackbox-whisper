@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Play, Stethoscope, Wrench, ShieldCheck } from "lucide-react";
+import { Play, Stethoscope, Wrench, ShieldCheck, ClipboardList } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { softSpring } from "@/lib/motion";
@@ -10,6 +10,7 @@ const ITEMS: { key: NavKey; label: string; icon: LucideIcon }[] = [
   { key: "diagnosis", label: "Diagnosis", icon: Stethoscope },
   { key: "fix", label: "Fix", icon: Wrench },
   { key: "validation", label: "Validation", icon: ShieldCheck },
+  { key: "plm", label: "PLM", icon: ClipboardList },
 ];
 
 export function LeftRail({ active, onSelect }: { active: NavKey; onSelect: (k: NavKey) => void }) {

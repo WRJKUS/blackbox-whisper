@@ -1,4 +1,4 @@
-export type NavKey = "replay" | "diagnosis" | "fix" | "validation";
+export type NavKey = "replay" | "diagnosis" | "fix" | "validation" | "plm";
 
 export const AGENT_STEPS = [
   "Replay loaded",
