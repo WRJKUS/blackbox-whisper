@@ -14,7 +14,7 @@ export function PromptBar({
   diagnosing: boolean;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-2.5 shadow-sm">
+    <div className="rounded-2xl bg-card p-3 shadow-card">
       <div className="flex items-center gap-2">
         <Sparkles className="ml-1.5 h-4 w-4 shrink-0 text-muted-foreground" />
         <input
@@ -22,14 +22,14 @@ export function PromptBar({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && onDiagnose()}
           placeholder="Describe a vehicle behavior issue…"
-          className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
+          className="min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
         />
         <div className="flex shrink-0 items-center gap-2">
-          <span className="hidden items-center gap-1.5 rounded-md border border-border bg-surface-muted px-2 py-1 text-[12px] font-medium text-muted-foreground sm:inline-flex">
+          <span className="hidden items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-muted-foreground sm:inline-flex">
             <Paperclip className="h-3.5 w-3.5" /> ROS bag attached
             <CheckCircle2 className="h-3.5 w-3.5 text-success" />
           </span>
-          <Button size="sm" className="h-9 gap-1.5 px-4" onClick={onDiagnose} disabled={diagnosing}>
+          <Button size="sm" className="h-9 gap-1.5 px-5" onClick={onDiagnose} disabled={diagnosing}>
             {diagnosing ? (
               <motion.span
                 className="h-3.5 w-3.5 rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground"

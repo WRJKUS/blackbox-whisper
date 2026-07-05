@@ -22,7 +22,7 @@ function Line({ children, tone }: { children: React.ReactNode; tone?: "muted" | 
         : tone === "muted"
           ? "text-muted-foreground"
           : "text-foreground";
-  return <div className={`font-mono text-[12px] leading-relaxed ${c}`}>{children}</div>;
+  return <div className={`font-mono text-xs leading-relaxed ${c}`}>{children}</div>;
 }
 
 export function TechnicalDrawer({
@@ -38,21 +38,18 @@ export function TechnicalDrawer({
 }) {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-[560px]"
-      >
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-[560px]">
         <SheetHeader className="border-b border-border px-5 py-4">
-          <SheetTitle className="text-[14px] font-semibold">Technical Details</SheetTitle>
-          <p className="text-[12px] text-muted-foreground">
-            Left turn understeer · Control module
-          </p>
+          <SheetTitle className="text-sm font-semibold tracking-[-0.01em]">
+            Technical Details
+          </SheetTitle>
+          <p className="text-xs text-muted-foreground">Left turn understeer · Control module</p>
         </SheetHeader>
 
         <Tabs value={tab} onValueChange={onTabChange} className="flex min-h-0 flex-1 flex-col">
-          <TabsList className="mx-5 mt-4 grid w-auto grid-cols-5">
+          <TabsList className="mx-5 mt-4 grid h-9 w-auto grid-cols-5 rounded-full p-1">
             {["Trace", "Code", "Logs", "Patch", "Test"].map((t) => (
-              <TabsTrigger key={t} value={t} className="text-[12px]">
+              <TabsTrigger key={t} value={t} className="rounded-full text-xs">
                 {t}
               </TabsTrigger>
             ))}
@@ -60,10 +57,16 @@ export function TechnicalDrawer({
 
           <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
             <TabsContent value="Trace" className="mt-0 space-y-2">
-              <div className="rounded-lg border border-border bg-surface-muted p-3">
-                <Line>Planner requested <span className="font-semibold">18.4°</span></Line>
-                <Line>Control output <span className="font-semibold text-anomaly">9.7°</span></Line>
-                <Line>Vehicle drifted <span className="font-semibold">1.4m</span></Line>
+              <div className="rounded-xl bg-surface-muted p-3.5 shadow-hairline">
+                <Line>
+                  Planner requested <span className="font-semibold">18.4°</span>
+                </Line>
+                <Line>
+                  Control output <span className="font-semibold text-anomaly">9.7°</span>
+                </Line>
+                <Line>
+                  Vehicle drifted <span className="font-semibold">1.4m</span>
+                </Line>
                 <Line tone="muted">Root module: Control</Line>
               </div>
             </TabsContent>
@@ -73,7 +76,7 @@ export function TechnicalDrawer({
             </TabsContent>
 
             <TabsContent value="Logs" className="mt-0">
-              <div className="rounded-lg border border-border bg-surface-muted p-3">
+              <div className="rounded-xl bg-surface-muted p-3.5 shadow-hairline">
                 <Line tone="muted">[12:04:18.201] /planning/steering_cmd → 18.4°</Line>
                 <Line tone="muted">[12:04:18.244] /control/clamp applied max 9.7°</Line>
                 <Line tone="del">[12:04:18.259] WARN curvature comp skipped (post-clamp)</Line>
@@ -82,19 +85,19 @@ export function TechnicalDrawer({
             </TabsContent>
 
             <TabsContent value="Patch" className="mt-0 space-y-3">
-              <div className="rounded-lg border border-anomaly/25 bg-anomaly-soft/40 p-3">
-                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-anomaly">
+              <div className="rounded-xl bg-anomaly-soft p-3.5">
+                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-anomaly">
                   Before
                 </p>
                 <Line>angle → clamp → compensation</Line>
               </div>
-              <div className="rounded-lg border border-success/25 bg-success-soft/50 p-3">
-                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-success">
+              <div className="rounded-xl bg-success-soft p-3.5">
+                <p className="mb-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-success">
                   After
                 </p>
                 <Line>angle → compensation → clamp</Line>
               </div>
-              <div className="rounded-lg border border-border bg-card p-3">
+              <div className="rounded-xl bg-card p-3.5 shadow-hairline">
                 <Line tone="del">- angle = clamp(angle);</Line>
                 <Line tone="del">- angle = compensate(angle, curvature);</Line>
                 <Line tone="add">+ angle = compensate(angle, curvature);</Line>
@@ -103,7 +106,7 @@ export function TechnicalDrawer({
             </TabsContent>
 
             <TabsContent value="Test" className="mt-0">
-              <div className="rounded-lg border border-border bg-surface-muted p-3">
+              <div className="rounded-xl bg-surface-muted p-3.5 shadow-hairline">
                 <Line>LeftTurnSteeringRegression</Line>
                 <Line tone="muted">Expected: 18.4° ± 0.8°</Line>
               </div>
@@ -117,14 +120,14 @@ export function TechnicalDrawer({
 
 function CursorPreview() {
   return (
-    <div className="overflow-hidden rounded-lg border border-border">
+    <div className="overflow-hidden rounded-xl shadow-hairline">
       <div className="grid grid-cols-[150px_1fr]">
         {/* File tree */}
         <div className="border-r border-border bg-surface-muted py-2">
           {FILE_TREE.map((f, i) => (
             <div
               key={i}
-              className={`flex items-center gap-1 px-2 py-1 text-[11.5px] ${
+              className={`flex items-center gap-1 px-2 py-1 text-xs ${
                 f.active ? "bg-replay-soft font-medium text-foreground" : "text-muted-foreground"
               }`}
               style={{ paddingLeft: 8 + f.depth * 10 }}
@@ -144,10 +147,10 @@ function CursorPreview() {
 
         {/* Code */}
         <div className="bg-card">
-          <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5 text-[11.5px] text-muted-foreground">
+          <div className="flex items-center gap-1.5 border-b border-border px-3 py-1.5 text-xs text-muted-foreground">
             <FileCode2 className="h-3 w-3" /> {ROOT_FILE}
           </div>
-          <div className="px-3 py-2 font-mono text-[11.5px] leading-relaxed">
+          <div className="px-3 py-2 font-mono text-xs leading-relaxed">
             <Line tone="muted">// {ROOT_FN}</Line>
             <div className="rounded bg-replay-soft px-1">
               <Line>double calculateSteeringAngle(</Line>
@@ -160,11 +163,11 @@ function CursorPreview() {
             <Line>{"}"}</Line>
           </div>
           <div className="border-t border-border bg-surface-muted px-3 py-2">
-            <p className="text-[11.5px] leading-relaxed text-muted-foreground">
+            <p className="text-xs leading-relaxed text-muted-foreground">
               <span className="font-medium text-foreground">Patch explanation:</span> curvature
               compensation now runs before the clamp, restoring the requested 18.4° turn.
             </p>
-            <p className="mt-2 text-[11.5px] leading-relaxed text-muted-foreground">
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               <span className="font-medium text-foreground">Regression:</span>{" "}
               <span className="font-mono">LeftTurnSteeringRegression</span> — expect 18.4° ± 0.8°.
             </p>

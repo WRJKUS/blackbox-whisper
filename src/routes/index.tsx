@@ -12,6 +12,7 @@ import { ValidationStrip } from "@/components/blackbox/ValidationStrip";
 import { AgentPanel } from "@/components/blackbox/AgentPanel";
 import { TechnicalDrawer } from "@/components/blackbox/TechnicalDrawer";
 import { AGENT_STEPS, type NavKey, type ProgressKey } from "@/lib/blackbox";
+import { appleEase } from "@/lib/motion";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -40,18 +41,20 @@ function Index() {
     clearTimers();
     setVisibleSteps(0);
     AGENT_STEPS.forEach((_, i) => {
-      timers.current.push(
-        setTimeout(() => setVisibleSteps(i + 1), 260 * (i + 1)),
-      );
+      timers.current.push(setTimeout(() => setVisibleSteps(i + 1), 260 * (i + 1)));
     });
   };
 
   // Initial page-load reveal
   useEffect(() => {
     revealSteps();
-    const t = setTimeout(() => toast.success("ROS bag attached", {
-      description: "paris_urban_drive_seg07.bag · 4.2s",
-    }), 400);
+    const t = setTimeout(
+      () =>
+        toast.success("ROS bag attached", {
+          description: "paris_urban_drive_seg07.bag · 4.2s",
+        }),
+      400,
+    );
     return () => {
       clearTimers();
       clearTimeout(t);
@@ -64,12 +67,15 @@ function Index() {
     setReplayKey((k) => k + 1);
     revealSteps();
     timers.current.push(
-      setTimeout(() => {
-        setDiagnosing(false);
-        toast.success("Diagnosis complete", {
-          description: "Understeer traced to control clamp ordering.",
-        });
-      }, 260 * AGENT_STEPS.length + 300),
+      setTimeout(
+        () => {
+          setDiagnosing(false);
+          toast.success("Diagnosis complete", {
+            description: "Understeer traced to control clamp ordering.",
+          });
+        },
+        260 * AGENT_STEPS.length + 300,
+      ),
     );
   };
 
@@ -118,10 +124,10 @@ function Index() {
 
         {/* Central workspace */}
         <motion.main
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-5"
+          transition={{ duration: 0.6, ease: appleEase }}
+          className="flex min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-8"
         >
           <PromptBar
             value={prompt}
